@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.supernormal.com"
+      "url": "https://api.supernormal.com/api/v1"
     }
   ],
   "security": [
@@ -19,30 +19,17 @@
     }
   ],
   "paths": {
-    "/plants": {
+    "/user": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
+        "description": "Returns the current user",
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "User response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -59,42 +46,6 @@
           }
         }
       },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
     },
     "/plants/{id}": {
       "delete": {
@@ -132,6 +83,31 @@
   },
   "components": {
     "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The user’s ID",
+            "type": "string"
+          },
+          "first_name": {
+            "description": "The user’s first name",
+            "type": "string"
+          },
+          "last_name": {
+            "description": "The user’s last name",
+            "type": "string"
+          },
+          "email": {
+            "description": "The user’s email",
+            "type": "string"
+          },
+          "avatar_url": {
+            "description": "The user’s avatar URL",
+            "type": "string"
+          }
+        }
+      },
       "Plant": {
         "required": [
           "name"
@@ -188,7 +164,7 @@
     "securitySchemes": {
       "ApiKeyAuth": {
         "type": "apiKey",
-        "in": "header"
+        "in": "header",
         "scheme": "X-API-TOKEN"
       }
     }
