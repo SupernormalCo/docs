@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Supernormal API",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "description": "Documentation for the Supernormal API",
     "license": {
       "name": "MIT"
     },
@@ -18,10 +18,34 @@
       "ApiKeyAuth": []
     }
   ],
+  "tags": [
+    {
+      "name": "Agents",
+      "description": "Operations about agents"
+    },
+    {
+      "name": "Calendar Events",
+      "description": "Operations about calendar"
+    },
+    {
+      "name": "Posts",
+      "description": "Operations about posts"
+    },
+    {
+      "name": "Current User",
+      "description": "Operations about user"
+    }
+  ],
   "paths": {
     "/user": {
       "get": {
-        "description": "Returns the current user",
+        "tags": ["Current User"],
+        "summary": "Get user",
+        "security": [
+          {
+            "ApiKeyAuth": ["user:read"]
+          }
+        ],
         "parameters": [],
         "responses": {
           "200": {
@@ -45,37 +69,281 @@
             }
           }
         }
-      },
+      }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/user/calendar_events": {
+      "get": {
+        "tags": ["Current User"],
+        "summary": "Upcoming calendar events",
+        "security": [
+          {
+            "ApiKeyAuth": ["calendar_events:read"]
+          }
+        ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "name": "from",
+            "in": "query",
+            "description": "The start date of the calendar events",
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The end date of the calendar events",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Calendar events response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarEvent"
+                  }
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": ["Posts"],
+        "summary": "Get posts",
+        "description": "Returns the current user's posts",
+        "security": [
+          {
+            "ApiKeyAuth": ["posts:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Posts response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": ["Posts"],
+        "summary": "Get a post",
+        "description": "Returns a specific post",
+        "security": [
+          {
+            "ApiKeyAuth": ["posts:read"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the post to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendar_events/{id}/record": {
+      "post": {
+        "tags": ["Calendar Events"],
+        "summary": "Toggle recording",
+        "description": "Toggles whether a calendar event should be recorded",
+        "security": [
+          {
+            "ApiKeyAuth": ["calendar_events:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the calendar event to record",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "record",
+            "in": "query",
+            "description": "Whether to record the calendar event",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calendar event recorded"
+          }
+        }
+      }
+    },
+    "/agents": {
+      "get": {
+        "tags": ["Agents"],
+        "summary": "Get agents",
+        "description": "Returns the current user's agents",
+        "security": [
+          {
+            "ApiKeyAuth": ["agents:read"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agents response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Agents"],
+        "summary": "Create an agent",
+        "description": "Creates an agent",
+        "security": [
+          {
+            "ApiKeyAuth": ["agents:write"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents/{id}": {
+      "get": {
+        "tags": ["Agents"],
+        "summary": "Get an agent",
+        "description": "Returns a specific agent",
+        "security": [
+          {
+            "ApiKeyAuth": ["agents:read"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the agent to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents/{id}/publish": {
+      "post": {
+        "tags": ["Agents"],
+        "summary": "Publish an agent",
+        "security": [
+          {
+            "ApiKeyAuth": ["agents:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the agent to publish",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent published"
+          }
+        }
+      }
+    },
+    "/agents/{id}/unpublish": {
+      "post": {
+        "tags": ["Agents"],
+        "summary": "Unpublish an agent",
+        "security": [
+          {
+            "ApiKeyAuth": ["agents:write"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the agent to unpublish",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent unpublished"
           }
         }
       }
@@ -83,6 +351,74 @@
   },
   "components": {
     "schemas": {
+      "Agent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The agent’s ID",
+            "type": "string"
+          },
+          "name": {
+            "description": "The agent’s name",
+            "type": "string"
+          },
+          "avatar_url": {
+            "description": "The agent’s avatar URL",
+            "type": "string"
+          },
+          "description": {
+            "description": "The agent’s description",
+            "type": "string"
+          }
+        }
+      },
+      "CalendarEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The calendar event’s ID",
+            "type": "string"
+          },
+          "name": {
+            "description": "The calendar event’s name",
+            "type": "string"
+          },
+          "start": {
+            "description": "The calendar event’s start time",
+            "type": "string"
+          },
+          "end": {
+            "description": "The calendar event’s end time",
+            "type": "string"
+          },
+          "platform_name": {
+            "description": "The calendar event’s platform name",
+            "type": "string",
+            "enum": ["google_meet", "teams", "zoom"]
+          },
+          "scheduled_to_record": {
+            "description": "Whether the calendar event is scheduled to record",
+            "type": "boolean"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The post’s ID",
+            "type": "string"
+          },
+          "title": {
+            "description": "The post’s title",
+            "type": "string"
+          },
+          "published_at": {
+            "description": "The post’s published at time",
+            "type": "string"
+          }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -108,42 +444,6 @@
           }
         }
       },
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
       "Error": {
         "required": [
           "error",
@@ -165,7 +465,12 @@
       "ApiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "scheme": "X-API-TOKEN"
+        "name": "X-API-TOKEN",
+        "x-scopes": {
+          "user:read": "Read user information",
+          "calendar_events:read": "Read calendar events",
+          "calendar_events:write": "Write calendar events"
+        }
       }
     }
   }
