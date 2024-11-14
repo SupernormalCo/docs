@@ -245,6 +245,15 @@
             "ApiKeyAuth": ["agents:write"]
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Agent response",
@@ -371,6 +380,64 @@
             "type": "string"
           }
         }
+      },
+      "AgentRequest": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Agent"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "actor_prompt": {
+                "type": "string",
+                "description": "The agent's actor prompt",
+                "enum": [
+                  "inbound_sales", "survey", "employee_satisfaction_survey", "customer_satisfaction_survey", "event_feedback_survey", "screening_interview"
+                ]
+              },
+              "actor_voice": {
+                "type": "string",
+                "description": "The agent's actor voice",
+                "enum": ["archer", "christopher", "rachel", "scarlet"]
+              },
+              "brand_color": {
+                "type": "string",
+                "description": "The agent's brand color"
+              },
+              "custom_prompt": {
+                "type": "string",
+                "description": "The agent's custom prompt"
+              },
+              "context": {
+                "type": "string",
+                "description": "The agent's context"
+              },
+              "greeting_prompt": {
+                "type": "string",
+                "description": "The agent's greeting prompt"
+              },
+              "goodbye_prompt": {
+                "type": "string",
+                "description": "The agent's goodbye prompt"
+              },
+              "is_host": {
+                "type": "boolean",
+                "description": "Whether the agent should speak first"
+              },
+              "mode": {
+                "type": "string",
+                "description": "The agent's speaking mode",
+                "enum": ["single_response", "conversation"]
+              },
+              "max_call_duration": {
+                "type": "integer",
+                "description": "The agent's maximum call duration"
+              }
+            }
+          }
+        ]
       },
       "CalendarEvent": {
         "type": "object",
